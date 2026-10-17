@@ -23,6 +23,7 @@ import argparse
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import time
@@ -48,7 +49,7 @@ def play(agent, opp, seed0, lo, hi, out, clock, log):
 def parse_arm(spec):
     name, rest = spec.split("=", 1)
     path, _, kv = rest.partition("@")
-    env = dict(p.split("=", 1) for p in kv.split(",")) if kv else {}
+    env = dict(p.split("=", 1) for p in re.split(r",(?=[A-Za-z_][A-Za-z0-9_]*=)", kv)) if kv else {}  # values may hold commas
     return name, os.path.abspath(path), env
 
 
@@ -131,7 +132,7 @@ def main():
         while jobs and len(running) < a.par:
             lo, name, path, env, hi, f = jobs.pop(0)
             e = dict(os.environ, PYTHONHASHSEED="0", **env)
-            cmd = [sys.executable, os.path.abspath(__file__), "--worker", path, opp, str(a.seed0), str(lo), str(hi), f, str(int(not a.noclock)), a.log]
+            cmd = ["nice", "-n", "19", sys.executable, os.path.abspath(__file__), "--worker", path, opp, str(a.seed0), str(lo), str(hi), f, str(int(not a.noclock)), a.log]
             running.append((subprocess.Popen(cmd, env=e, cwd=ROOT), name, lo))
         time.sleep(2)
         for p in [r for r in running if r[0].poll() is not None]:

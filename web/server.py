@@ -42,6 +42,9 @@ AGENT_PATH = os.environ.get("CATAN_AGENT", os.path.join(ROOT, "agents", "distill
 STATIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 PRIVATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "private")
 GAMES_DIR = os.path.join(ROOT, "games")
+#: Finished and unfinished games against humans, one JSON file each (tools/human_summary.py reads them).
+#: Same format as advisor games (tiles, ports, first, log), so tools/advise.py can replay them. "" turns it off.
+RECORD_DIR = os.environ.get("CATAN_RECORD_DIR", os.path.join(GAMES_DIR, "human"))
 MAX_PLAY_GAMES = 200
 TURN_LIMIT = 1000
 AgentClass = None
@@ -177,7 +180,7 @@ class PlayGame:
 
     HUMAN, BOT = A.US, A.THEM
 
-    def __init__(self, first):
+    def __init__(self, first, player=None):
         self.lock = threading.Lock()
         self.rng = random.Random(secrets.randbits(64))
         self.mask_rng = random.Random(self.rng.random())
@@ -189,6 +192,18 @@ class PlayGame:
         self.game = g
         self.agent = new_agent()
         self.touched = time.time()
+        self.record = None
+        if RECORD_DIR:
+            m = g.state.board.map
+            tiles = " ".join("de" if m.tiles[c].resource is None else f"{A.SHORT[m.tiles[c].resource]}{m.tiles[c].number}"
+                             for c in A.land_order(m.tiles))
+            ports = " ".join("3" if m.tiles[c].resource is None else A.SHORT[m.tiles[c].resource] for c in A.port_order(m.tiles))
+            self.record = dict(version=1, mode="play", agent=os.path.relpath(AGENT_PATH, ROOT),
+                               player=player if isinstance(player, str) and NAME_RE.match(player) else None,
+                               started=time.strftime("%Y-%m-%dT%H:%M:%S"), tiles=tiles, ports=ports,
+                               first="us" if want == self.HUMAN else "them", vps=10, discard=7, log=[],
+                               winner=None, turns=0, note="us = the human player (red), them = the bot (blue)")
+            self.path = os.path.join(RECORD_DIR, time.strftime("%Y%m%d_%H%M%S_") + secrets.token_hex(4) + ".json")
 
     def outcome(self, a):
         """dice and steals from our own generator: neither player's search can move them"""
@@ -204,9 +219,24 @@ class PlayGame:
     def apply(self, a):
         r = self.outcome(a)
         if r is None and a.action_type != ActionType.MOVE_ROBBER:
-            self.game.execute(a)
+            rec = self.game.execute(a)
         else:
-            self.game.execute(a, action_record=ActionRecord(a, r))
+            rec = self.game.execute(a, action_record=ActionRecord(a, r))
+        if self.record is not None:
+            res = rec.result
+            self.record["log"].append({"a": repr(a), "r": list(res) if isinstance(res, tuple) else res})
+            self.save()
+
+    def save(self):
+        """the game so far, written after every move (abandoned games are kept too)"""
+        w = self.game.winning_color()
+        self.record.update(winner=None if w is None else ("human" if w == self.HUMAN else "bot"),
+                           turns=self.game.state.num_turns, updated=time.strftime("%Y-%m-%dT%H:%M:%S"))
+        try:
+            os.makedirs(RECORD_DIR, exist_ok=True)
+            A.save(self.path, self.record)
+        except OSError as ex:
+            sys.stderr.write(f"could not record game: {ex}\n")
 
     def over(self):
         return self.game.winning_color() is not None or self.game.state.num_turns >= TURN_LIMIT
@@ -234,7 +264,7 @@ def play_get(gid):
 
 def play_api(method, parts, body):
     if method == "POST" and parts == ["new"]:
-        g = PlayGame(body.get("first", "random"))
+        g = PlayGame(body.get("first", "random"), body.get("player"))
         gid = secrets.token_urlsafe(12)
         with PLAY_LOCK:
             PLAY[gid] = g

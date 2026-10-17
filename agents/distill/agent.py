@@ -10,17 +10,36 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import json      # noqa: E402
+
 import a2        # noqa: E402
 import v4net     # noqa: E402
 
 MARGIN = 0.02        # P(win) the net must gain over agent2's pick to override it
 NET_MIN_CPU = 0.25   # seconds of allowance that must remain to consult the net
 
+# Ablation switches (environment; unset = the agent as shipped):
+#   DISTILL_MARGIN=inf          never override: agent2 alone
+#   DISTILL_CONFIG='{"planner": false}'      a2.CONFIG overrides (planner, win_check, knight_rule, ...)
+#   DISTILL_A2_WEIGHTS='{"dev_owned": 0}'    a2.WEIGHTS overrides (lr_always, port2, port3, dev_owned)
+#   DISTILL_OPENING=0           hand-written opening score instead of the learned opening model
+#   DISTILL_JUDGE=outcome       the judge before distillation (trained on game outcomes): ablation/outcome_value_w*.npz
+#   AGENT_WEIGHTS=a.npz,b.npz   any other judge networks (v4net)
+MARGIN = float(os.environ.get("DISTILL_MARGIN", MARGIN))
+a2.CONFIG.update(json.loads(os.environ.get("DISTILL_CONFIG", "{}")))
+a2.WEIGHTS.update(json.loads(os.environ.get("DISTILL_A2_WEIGHTS", "{}")))
+if os.environ.get("DISTILL_OPENING", "1") == "0":
+    a2._W = None
+
 
 class Agent(a2.Agent):
     def __init__(self):
         super().__init__()
-        self.net = v4net.Agent()
+        judge = os.environ.get("DISTILL_JUDGE")
+        here = os.path.dirname(os.path.abspath(__file__))
+        self.net = v4net.Agent(weights=None if not judge else sorted(
+            os.path.join(here, "ablation", f) for f in os.listdir(os.path.join(here, "ablation"))
+            if f.startswith(judge + "_value_w")))
         self._obs = None
 
     def decide(self, obs, actions):

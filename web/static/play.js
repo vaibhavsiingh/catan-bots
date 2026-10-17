@@ -62,8 +62,17 @@ async function load() {
   render();
 }
 
+function playerId() {
+  // a random id kept in this browser, so games by the same person can be grouped; nothing else is stored
+  try {
+    let id = localStorage.getItem("catan_player_id");
+    if (!id) { id = "p" + Math.random().toString(36).slice(2, 12); localStorage.setItem("catan_player_id", id); }
+    return id;
+  } catch (e) { return null; }
+}
+
 async function start(first) {
-  const j = await api("/api/play/new", { first });
+  const j = await api("/api/play/new", { first, player: playerId() });
   gid = j.id; geo = j.geometry; st = j.state;
   location.hash = gid;
   render();
@@ -76,7 +85,7 @@ function startDialog() {
     { label: "🎲 Random", cls: "primary", onclick: () => start("random") },
     { label: "Me", onclick: () => start("you") },
     { label: "The bot", onclick: () => start("bot") },
-  ], "Standard rules, 1v1, first to 10 victory points. No trading between players.");
+  ], "Standard rules, 1v1, first to 10 victory points. No trading between players. Games are recorded anonymously (moves and result only) for research on the bot.");
 }
 
 $("newgame").addEventListener("click", startDialog);
