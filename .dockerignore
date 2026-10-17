@@ -1,0 +1,9 @@
+*
+!harness/__init__.py
+!harness/_patch.py
+!harness/obs.py
+!harness/host.py
+!tools/advise.py
+!agents/distill/
+!web/server.py
+!web/static/

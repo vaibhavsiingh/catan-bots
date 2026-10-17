@@ -1,0 +1,8 @@
+.venv*/
+__pycache__/
+*.pyc
+games/
+runs/
+advise_template.html
+_old/
+catanatron/

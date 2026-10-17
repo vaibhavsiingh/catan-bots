@@ -1,0 +1,6 @@
+{
+ "path": "agents/f/agent.py",
+ "env": {},
+ "opp": "agents/lookahead/agent.py",
+ "clock": false
+}

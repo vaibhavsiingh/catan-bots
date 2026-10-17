@@ -1,0 +1,9 @@
+# Python 3.11. The engine is pinned to one catanatron commit: PyPI's catanatron has a different action
+# space (DISCARD without a resource, a 3-tuple MOVE_ROBBER), which these agents do not speak.
+catanatron @ git+https://github.com/bcollazo/catanatron.git@d3f4ad05bb78d8b2309631d6d3cfa8fcb6fda816
+networkx==3.6.1
+numpy==2.4.6
+psutil==7.2.2
+# torch: the lookahead, ppo and ppo_search agents. On Linux, the CPU build:
+#   pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+torch==2.8.0

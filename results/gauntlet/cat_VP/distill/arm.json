@@ -1,0 +1,8 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "CAT": "VP"
+ },
+ "opp": "tools/cat_agent.py",
+ "clock": false
+}

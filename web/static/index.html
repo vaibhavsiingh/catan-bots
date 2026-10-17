@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catan vs Bot</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header>
+  <h1>🏝️ Catan 1v1 vs Bot</h1>
+  <span class="grow"></span>
+  <button id="newgame">New game</button>
+</header>
+<main>
+  <div class="boardwrap"><svg class="board" id="board"></svg></div>
+  <div class="side">
+    <div class="card-panel" id="status"></div>
+    <div class="card-panel" id="controls"></div>
+    <div class="card-panel"><h2>Players</h2><div id="players"></div></div>
+    <div class="card-panel"><h2>Log</h2><div id="log"></div></div>
+  </div>
+</main>
+<script src="/static/board.js"></script>
+<script src="/static/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+ "agent": "agents/distill/agent.py",
+ "opp": {
+  "CAT_CLASS": "hexmachina.best_e2g:FooPlayer",
+  "CAT": "PY"
+ }
+}

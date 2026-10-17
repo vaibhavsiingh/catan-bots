@@ -1,0 +1,8 @@
+{
+ "path": "agents/f/agent.py",
+ "env": {
+  "CAT": "F"
+ },
+ "opp": "tools/cat_agent.py",
+ "clock": false
+}

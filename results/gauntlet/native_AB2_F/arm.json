@@ -1,0 +1,7 @@
+{
+ "agent": "agents/f/agent.py",
+ "opp": {
+  "CAT_DEPTH": "2",
+  "CAT": "AB"
+ }
+}

@@ -1,0 +1,6 @@
+{
+ "path": "agents/f/agent.py",
+ "env": {},
+ "opp": "agents/heuristic/agent.py",
+ "clock": false
+}

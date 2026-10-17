@@ -1,0 +1,7 @@
+{
+ "agent": "agents/f/agent.py",
+ "opp": {
+  "CAT_CLASS": "hexmachina.best_e5bg:FooPlayer",
+  "CAT": "PY"
+ }
+}

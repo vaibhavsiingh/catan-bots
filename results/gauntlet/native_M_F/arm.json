@@ -1,0 +1,6 @@
+{
+ "agent": "agents/f/agent.py",
+ "opp": {
+  "CAT": "M"
+ }
+}
