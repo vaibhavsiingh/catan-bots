@@ -1,0 +1,12 @@
+{
+ "a": {
+  "path": "agents/ppo_search/agent.py",
+  "env": {}
+ },
+ "b": {
+  "path": "agents/heuristic/agent.py",
+  "env": {}
+ },
+ "clock": false,
+ "seed0": 700000
+}

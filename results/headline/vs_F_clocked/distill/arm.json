@@ -1,0 +1,6 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {},
+ "opp": "agents/f/agent.py",
+ "clock": true
+}

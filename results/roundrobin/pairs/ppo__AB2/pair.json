@@ -1,0 +1,15 @@
+{
+ "a": {
+  "path": "agents/ppo/agent.py",
+  "env": {}
+ },
+ "b": {
+  "path": "tools/cat_agent.py",
+  "env": {
+   "CAT": "AB",
+   "CAT_DEPTH": "2"
+  }
+ },
+ "clock": false,
+ "seed0": 700000
+}

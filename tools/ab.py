@@ -75,9 +75,11 @@ def summary(out, names):
         p = w / k
         cpu = [r["a"]["cpu_s"] for r in g]
         bad = sum(r["a"]["errors"] + r["a"]["timeouts"] + r["a"]["crashes"] for r in g)
+        opp_bad = sum(r["b"]["timeouts"] + r["b"]["crashes"] + (r["b"]["over"] is not None) for r in g)
         line = (f"{n:14s} {p:.3f} ± {1.96 * math.sqrt(p * (1 - p) / k):.3f} ({w}/{k})  "
                 f"CPU mean {1000 * sum(cpu) / k:4.0f} worst {1000 * max(cpu):4.0f} ms  "
-                f"over {sum(r['a']['over'] is not None for r in g)}  faults {bad}")
+                f"over {sum(r['a']['over'] is not None for r in g)}  faults {bad}"
+                + (f"  OPPONENT played random moves in {opp_bad} games" if opp_bad else ""))
         if n != base:  # paired: per board, (our wins with this arm - with the baseline) / 2
             common = arms[n].keys() & arms[base].keys()
             boards = {}
@@ -132,6 +134,8 @@ def main():
         while jobs and len(running) < a.par:
             lo, name, path, env, hi, f = jobs.pop(0)
             e = dict(os.environ, PYTHONHASHSEED="0", **env)
+            if a.noclock:  # no CPU clock: a move may take up to 2 minutes; only a stuck agent is cut off
+                e.setdefault("CATAN_CALL_TIMEOUT_S", "120")
             cmd = ["nice", "-n", "19", sys.executable, os.path.abspath(__file__), "--worker", path, opp, str(a.seed0), str(lo), str(hi), f, str(int(not a.noclock)), a.log]
             running.append((subprocess.Popen(cmd, env=e, cwd=ROOT), name, lo))
         time.sleep(2)

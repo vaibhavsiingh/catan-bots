@@ -1,0 +1,8 @@
+[04:23] 1a headline: distill vs F, clocked
+50 chunks to play, 6 at a time
+distill        0.848 ± 0.022 (848/1000)  CPU mean  389 worst 1230 ms  over 0  faults 0
+[04:25] 1b headline: distill and F vs AlphaBeta-2, no clock
+100 chunks to play, 8 at a time
+distill        0.832 ± 0.023 (832/1000)  CPU mean  520 worst 2440 ms  over 0  faults 0
+F              0.485 ± 0.031 (485/1000)  CPU mean  336 worst 1050 ms  over 0  faults 0   vs distill: -34.7 ± 3.7 pts (500 boards)
+[04:38] 2 round robin

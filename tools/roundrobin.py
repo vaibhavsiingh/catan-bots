@@ -175,7 +175,7 @@ def main():
             lo, x, y, hi, f = jobs.pop(0)
             cmd = ["nice", "-n", "19", sys.executable, AB, "--worker", wrap[x], wrap[y], str(a.seed0), str(lo), str(hi),
                    f, str(int(not a.noclock)), ""]
-            running.append((subprocess.Popen(cmd, cwd=ROOT, env=dict(os.environ, PYTHONHASHSEED="0")), f"{x}__{y}", lo))
+            running.append((subprocess.Popen(cmd, cwd=ROOT, env=dict(os.environ, PYTHONHASHSEED="0", **({} if not a.noclock or "CATAN_CALL_TIMEOUT_S" in os.environ else {"CATAN_CALL_TIMEOUT_S": "120"}))), f"{x}__{y}", lo))
         time.sleep(2)
         for p in [r for r in running if r[0].poll() is not None]:
             running.remove(p)

@@ -42,7 +42,9 @@ CPU_FLAT_CAP_S = None
 #: uses no CPU, so a CPU cap alone never stops it; this bounds how long one agent can hold up a match.
 WALL_SLACK_S = 3.0
 #: One decision. An agent silent this long is killed and restarted, and random moves finish the game.
-CALL_TIMEOUT_S = 3.0
+#: CATAN_CALL_TIMEOUT_S overrides it (tools/ab.py and tools/roundrobin.py set 120 s for --noclock runs, so
+#: slow searchers are judged on their moves, and only an agent that is stuck gets cut off).
+CALL_TIMEOUT_S = float(os.environ.get("CATAN_CALL_TIMEOUT_S", "3.0"))
 #: While an agent thinks, the harness reads its CPU this often and stops waiting the moment the
 #: allowance is spent, so no decision can overspend the clock by more than about this much.
 POLL_S = 0.005
