@@ -1,0 +1,15 @@
+{
+ "a": {
+  "path": "tools/cat_agent.py",
+  "env": {
+   "CAT": "AB",
+   "CAT_DEPTH": "2"
+  }
+ },
+ "b": {
+  "path": "agents/ens_distill/agent.py",
+  "env": {}
+ },
+ "clock": false,
+ "seed0": 700000
+}

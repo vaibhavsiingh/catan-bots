@@ -21,10 +21,39 @@ async function home() {
   geo = t.geometry;
   drawBoard($("board"), geo, null, { tileLabel: t => "#" + t.i, portLabel: p => "P" + p.i });
   const list = (await api("/api/adv/list")).games;
+  const live = await api("/api/adv/colonist/live");
+  const file = el("input", { type: "file", accept: ".json,application/json", on: { change: async () => {
+    try {
+      const capture = JSON.parse(await file.files[0].text());
+      open((await api("/api/adv/colonist", { capture })).name);
+    } catch (e) { alert(e.message); }
+  } } });
   side(panel("New game", el("button", { class: "primary big", on: { click: editor } }, "＋ Enter a new board")),
+       panel("From colonist.io",
+         el("p", { class: "note", text: "Live: paste web/private/colonist_capture.js into the colonist tab's console (F12) before the game starts; the game opens here by itself, with the board, who is first and the setup placements." }),
+         live.name ? el("button", { class: "primary", on: { click: () => open(live.name) } }, "Open live game " + live.name) : null,
+         live.error ? el("p", { class: "note", text: "colonist feed: " + live.error }) : null,
+         el("p", { class: "note", text: "Or import a saved recording (colonist_capture.json):" }), file),
        panel("Saved games", list.length ? el("div", { class: "actions" }, list.map(g =>
          el("button", { on: { click: () => open(g) } }, g))) : el("p", { class: "note", text: "None yet." })));
+  liveSeen = live.name;
 }
+
+// Follow the colonist feed: open a new live game from the home screen, and pick up moves imported into the open game.
+let liveSeen = null;
+setInterval(async () => {
+  if (busy || document.getElementById("modal")) return;
+  try {
+    if (!name) {
+      if (document.getElementById("gname")) return;  // the board editor is open
+      const live = await api("/api/adv/colonist/live");
+      if (live.name && live.name !== liveSeen) open(live.name);
+    } else if (st) {
+      const j = await api(`/api/adv/${name}`);
+      if ((j.state.entries !== st.entries || j.state.colonist !== st.colonist) && !busy) { st = j.state; render(); }
+    }
+  } catch (e) { /* server restarting */ }
+}, 2000);
 
 // ---------------------------------------------------------------- board editor
 
@@ -177,6 +206,7 @@ function render() {
 
   const top = panel(null, el("div", { class: "row" }, el("span", { class: "dice", text: diceText(st) }),
     el("span", { class: "note", text: `Turn ${st.turn} · step ${st.entries}` })));
+  if (st.colonist) top.append(el("div", { class: "banner them", text: "colonist: " + st.colonist + ". Enter the rest here by hand, or fix the step and it resumes." }));
   const ctl = panel(us ? "Bot's move" : "Opponent's move");
   if (st.winner) {
     ctl.append(el("div", { class: "banner", text: `${LABELS[st.winner]} reached ${10} VP by the engine's count.` }));

@@ -1,0 +1,8 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "DISTILL_CONFIG": "{\"planner\": false}"
+ },
+ "opp": "agents/f/agent.py",
+ "clock": false
+}

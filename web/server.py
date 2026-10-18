@@ -29,6 +29,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "private"))  # colonist.py, advisor only
 
 import advise as A  # noqa: E402  board, log and hidden-card logic shared with the terminal advisor
 from harness.host import _load_agent  # noqa: E402
@@ -42,6 +43,7 @@ AGENT_PATH = os.environ.get("CATAN_AGENT", os.path.join(ROOT, "agents", "distill
 STATIC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 PRIVATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "private")
 GAMES_DIR = os.path.join(ROOT, "games")
+COLONIST_ORIGIN = "https://colonist.io"
 #: Finished and unfinished games against humans, one JSON file each (tools/human_summary.py reads them).
 #: Same format as advisor games (tiles, ports, first, log), so tools/advise.py can replay them. "" turns it off.
 RECORD_DIR = os.environ.get("CATAN_RECORD_DIR", os.path.join(GAMES_DIR, "human"))
@@ -347,7 +349,7 @@ class AdvisorGame:
         hidden = [d for d in A.DEVS.values() if p[f"{k}_{d}_IN_HAND"] > 0]
         return state_view(g, A.US, "advisor", dict(
             actions=acts, advice=advice, name=self.name, entries=len(self.spec["log"]),
-            them_hidden=len(hidden) > 0, first=self.spec["first"]))
+            them_hidden=len(hidden) > 0, first=self.spec["first"], colonist=COLONIST_PROBLEMS.get(self.name)))
 
 
 ADV = {}
@@ -366,7 +368,68 @@ def adv_get(name):
         return ADV[name]
 
 
+COLONIST = dict(msgs=[], name=None, error=None)  # the live feed from colonist_capture.js
+COLONIST_LOCK = threading.Lock()
+COLONIST_PROBLEMS = {}  # game name -> where following colonist stopped (None: in step)
+
+
+def colonist_import(msgs):
+    """board, first player and setup moves from colonist's messages -> games/NAME.json (moves typed after them kept)"""
+    import colonist  # web/private: only with --advisor
+    built = colonist.build(msgs)
+    if built is None:
+        return None
+    name, spec, problem, _ = built
+    path = os.path.join(GAMES_DIR, name + ".json")
+    with ADV_LOCK:
+        colonist.merge(path, spec)
+        if name in ADV:
+            with ADV[name].lock:
+                ADV[name].reload()
+    COLONIST_PROBLEMS[name] = problem
+    return name
+
+
+def colonist_id(m):
+    return (m["payload"].get("gameSettings") or {}).get("id")
+
+
+def colonist_api(parts, body):
+    import colonist
+    try:
+        if parts == ["colonist"]:  # a whole recording (colonist_capture.json)
+            capture = body.get("capture")
+            if not isinstance(capture, list):
+                raise ApiError(HTTPStatus.BAD_REQUEST, "expected a colonist_capture.json")
+            name = colonist_import(colonist.game_messages(capture))
+            if name is None:
+                raise ApiError(HTTPStatus.BAD_REQUEST, "no game start in this recording: paste the script before the game starts")
+            return dict(name=name)
+        if parts == ["colonist", "push"]:  # one message, live
+            with COLONIST_LOCK:
+                m = colonist.game_messages([dict(dir="in", b64=body.get("b64"))])
+                if not m:
+                    return dict(name=COLONIST["name"], error=COLONIST["error"])
+                if m[0].get("type") == 4 and any(x.get("type") == 4 and colonist_id(x) != colonist_id(m[0]) for x in COLONIST["msgs"]):
+                    COLONIST["msgs"] = []  # a new game (a reconnect resends the same game's full state: kept)
+                COLONIST["msgs"].append(m[0])
+                if m[0].get("type") in (4, 91):
+                    try:
+                        COLONIST["name"] = colonist_import(COLONIST["msgs"]) or COLONIST["name"]
+                        COLONIST["error"] = COLONIST_PROBLEMS.get(COLONIST["name"])
+                    except (AssertionError, KeyError, ValueError) as ex:
+                        COLONIST["error"] = str(ex)
+                return dict(name=COLONIST["name"], error=COLONIST["error"])
+        if parts == ["colonist", "live"]:
+            return dict(name=COLONIST["name"], error=COLONIST["error"])
+    except (AssertionError, KeyError, ValueError) as ex:
+        raise ApiError(HTTPStatus.BAD_REQUEST, str(ex))
+    return None
+
+
 def advisor_api(method, parts, body):
+    if parts[:1] == ["colonist"]:
+        return colonist_api(parts, body) if method == "POST" or parts == ["colonist", "live"] else None
     if method == "GET" and parts == ["list"]:
         os.makedirs(GAMES_DIR, exist_ok=True)
         files = sorted((f for f in os.listdir(GAMES_DIR) if f.endswith(".json")),
@@ -493,6 +556,7 @@ def make_handler(advisor):
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
+            self.cors()
             self.end_headers()
             self.wfile.write(data)
 
@@ -518,7 +582,7 @@ def make_handler(advisor):
             body = {}
             if method == "POST":
                 n = int(self.headers.get("Content-Length") or 0)
-                if n > 20000:
+                if n > (5_000_000 if parts[1:3] == ["adv", "colonist"] else 20000):
                     return self.send(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"error": "too large"})
                 try:
                     body = json.loads(self.rfile.read(n) or b"{}")
@@ -537,6 +601,18 @@ def make_handler(advisor):
             if out is None:
                 return self.send(HTTPStatus.NOT_FOUND, {"error": "not found"})
             self.send(HTTPStatus.OK, out)
+
+        def cors(self):
+            # colonist_capture.js, running on colonist.io, posts the live feed here; nothing else is cross-origin
+            if advisor and self.path.startswith("/api/adv/colonist/") and self.headers.get("Origin") == COLONIST_ORIGIN:
+                self.send_header("Access-Control-Allow-Origin", COLONIST_ORIGIN)
+                self.send_header("Access-Control-Allow-Headers", "Content-Type")
+                self.send_header("Access-Control-Allow-Private-Network", "true")
+
+        def do_OPTIONS(self):
+            self.send_response(HTTPStatus.NO_CONTENT)
+            self.cors()
+            self.end_headers()
 
         def do_GET(self):
             self.route("GET")

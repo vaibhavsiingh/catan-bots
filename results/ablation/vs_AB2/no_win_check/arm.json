@@ -1,0 +1,10 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "DISTILL_CONFIG": "{\"win_check\": false}",
+  "CAT": "AB",
+  "CAT_DEPTH": "2"
+ },
+ "opp": "tools/cat_agent.py",
+ "clock": false
+}

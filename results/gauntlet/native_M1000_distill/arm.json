@@ -1,0 +1,7 @@
+{
+ "agent": "agents/distill/agent.py",
+ "opp": {
+  "CAT": "M",
+  "CAT_N": "1000"
+ }
+}

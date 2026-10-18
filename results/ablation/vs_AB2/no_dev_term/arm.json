@@ -1,0 +1,10 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "DISTILL_A2_WEIGHTS": "{\"dev_owned\": 0}",
+  "CAT": "AB",
+  "CAT_DEPTH": "2"
+ },
+ "opp": "tools/cat_agent.py",
+ "clock": false
+}

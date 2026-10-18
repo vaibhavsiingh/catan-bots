@@ -1,0 +1,8 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "DISTILL_CONFIG": "{\"trade_chain\": false, \"road_plan\": false}"
+ },
+ "opp": "agents/lookahead/agent.py",
+ "clock": false
+}

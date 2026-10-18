@@ -1,0 +1,12 @@
+{
+ "a": {
+  "path": "agents/distill/agent.py",
+  "env": {}
+ },
+ "b": {
+  "path": "agents/ens_distill/agent.py",
+  "env": {}
+ },
+ "clock": false,
+ "seed0": 700000
+}

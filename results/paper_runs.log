@@ -6,3 +6,222 @@ distill        0.848 ± 0.022 (848/1000)  CPU mean  389 worst 1230 ms  over 0  f
 distill        0.832 ± 0.023 (832/1000)  CPU mean  520 worst 2440 ms  over 0  faults 0
 F              0.485 ± 0.031 (485/1000)  CPU mean  336 worst 1050 ms  over 0  faults 0   vs distill: -34.7 ± 3.7 pts (500 boards)
 [04:38] 2 round robin
+420 chunks to play, 8 at a time, nice 19
+Ratings (Bradley-Terry, Elo scale, F = 1500; 95% bootstrap interval)
+
+| agent | rating | 95% interval | games |
+|---|---|---|---|
+| distill | 1752 | 1730 – 1772 | 2400 |
+| ppo_search | 1595 | 1573 – 1613 | 2400 |
+| lookahead | 1595 | 1577 – 1611 | 2400 |
+| heuristic | 1549 | 1527 – 1569 | 2400 |
+| ppo | 1547 | 1529 – 1562 | 2400 |
+| F | 1500 | 1500 – 1500 | 2400 |
+| AB2 | 1485 | 1463 – 1503 | 2400 |
+
+Win rate of the row agent against the column agent (decisive games):
+
+| | distill | ppo_search | lookahead | heuristic | ppo | F | AB2 |
+|---|---|---|---|---|---|---|---|
+| distill | — | 71% | 72% | 78% | 76% | 79% | 82% |
+| ppo_search | 29% | — | 50% | 57% | 55% | 65% | 65% |
+| lookahead | 28% | 50% | — | 56% | 59% | 66% | 62% |
+| heuristic | 22% | 43% | 44% | — | 49% | 57% | 62% |
+| ppo | 24% | 45% | 41% | 51% | — | 55% | 58% |
+| F | 21% | 35% | 34% | 43% | 45% | — | 54% |
+| AB2 | 18% | 35% | 38% | 38% | 42% | 46% | — |
+[05:31] 3 ablation vs F
+330 chunks to play, 8 at a time
+full           0.843 ± 0.029 (506/600)  CPU mean  509 worst 2920 ms  over 0  faults 0
+no_judge       0.777 ± 0.033 (466/600)  CPU mean  439 worst 1590 ms  over 0  faults 0   vs full: -6.7 ± 3.7 pts (300 boards)
+outcome_judge  0.815 ± 0.031 (489/600)  CPU mean  466 worst 1920 ms  over 0  faults 0   vs full: -2.8 ± 3.5 pts (300 boards)
+no_dev_term    0.840 ± 0.029 (504/600)  CPU mean  525 worst 2990 ms  over 0  faults 0   vs full: -0.3 ± 2.7 pts (300 boards)
+no_planner     0.842 ± 0.029 (505/600)  CPU mean  516 worst 1910 ms  over 0  faults 0   vs full: -0.2 ± 1.6 pts (300 boards)
+no_chains      0.843 ± 0.029 (506/600)  CPU mean  499 worst 2040 ms  over 0  faults 0   vs full: +0.0 ± 0.9 pts (300 boards)
+no_win_check   0.843 ± 0.029 (506/600)  CPU mean  508 worst 3040 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.805 ± 0.032 (483/600)  CPU mean  468 worst 2670 ms  over 0  faults 0   vs full: -3.8 ± 2.5 pts (300 boards)
+no_robber_rule 0.853 ± 0.028 (512/600)  CPU mean  535 worst 2120 ms  over 0  faults 0   vs full: +1.0 ± 2.2 pts (300 boards)
+no_opening_model 0.822 ± 0.031 (493/600)  CPU mean  471 worst 3200 ms  over 0  faults 0   vs full: -2.2 ± 3.4 pts (300 boards)
+rules_off      0.637 ± 0.038 (382/600)  CPU mean  583 worst 1840 ms  over 0  faults 0   vs full: -20.7 ± 4.3 pts (300 boards)
+[05:46] 3 ablation vs AB2
+330 chunks to play, 8 at a time
+full           0.815 ± 0.031 (489/600)  CPU mean  554 worst 1860 ms  over 0  faults 0
+no_judge       0.755 ± 0.034 (453/600)  CPU mean  496 worst 2500 ms  over 0  faults 0   vs full: -6.0 ± 3.8 pts (300 boards)
+outcome_judge  0.783 ± 0.033 (470/600)  CPU mean  529 worst 2040 ms  over 0  faults 0   vs full: -3.2 ± 4.0 pts (300 boards)
+no_dev_term    0.815 ± 0.031 (489/600)  CPU mean  582 worst 1530 ms  over 0  faults 0   vs full: +0.0 ± 2.9 pts (300 boards)
+no_planner     0.820 ± 0.031 (492/600)  CPU mean  555 worst 2380 ms  over 0  faults 0   vs full: +0.5 ± 2.4 pts (300 boards)
+no_chains      0.820 ± 0.031 (492/600)  CPU mean  548 worst 1980 ms  over 0  faults 0   vs full: +0.5 ± 1.4 pts (300 boards)
+no_win_check   0.815 ± 0.031 (489/600)  CPU mean  561 worst 1850 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.793 ± 0.032 (476/600)  CPU mean  524 worst 2240 ms  over 0  faults 0   vs full: -2.2 ± 3.0 pts (300 boards)
+no_robber_rule 0.820 ± 0.031 (492/600)  CPU mean  606 worst 2330 ms  over 0  faults 0   vs full: +0.5 ± 2.8 pts (300 boards)
+no_opening_model 0.822 ± 0.031 (493/600)  CPU mean  540 worst 1710 ms  over 0  faults 0   vs full: +0.7 ± 3.5 pts (300 boards)
+rules_off      0.638 ± 0.038 (383/600)  CPU mean  662 worst 2210 ms  over 0  faults 0   vs full: -17.7 ± 4.0 pts (300 boards)
+[06:33] 3 ablation vs lookahead
+330 chunks to play, 8 at a time
+full           0.740 ± 0.035 (444/600)  CPU mean  557 worst 2140 ms  over 0  faults 0
+no_judge       0.630 ± 0.039 (378/600)  CPU mean  464 worst 1730 ms  over 0  faults 0   vs full: -11.0 ± 4.5 pts (300 boards)
+outcome_judge  0.665 ± 0.038 (399/600)  CPU mean  498 worst 1690 ms  over 0  faults 0   vs full: -7.5 ± 4.0 pts (300 boards)
+no_dev_term    0.693 ± 0.037 (416/600)  CPU mean  567 worst 2040 ms  over 0  faults 0   vs full: -4.7 ± 3.7 pts (300 boards)
+no_planner     0.747 ± 0.035 (448/600)  CPU mean  548 worst 1850 ms  over 0  faults 0   vs full: +0.7 ± 2.9 pts (300 boards)
+no_chains      0.735 ± 0.035 (441/600)  CPU mean  540 worst 2140 ms  over 0  faults 0   vs full: -0.5 ± 2.5 pts (300 boards)
+no_win_check   0.740 ± 0.035 (444/600)  CPU mean  559 worst 2290 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.703 ± 0.037 (422/600)  CPU mean  515 worst 2070 ms  over 0  faults 0   vs full: -3.7 ± 3.7 pts (300 boards)
+no_robber_rule 0.717 ± 0.036 (430/600)  CPU mean  599 worst 2840 ms  over 0  faults 0   vs full: -2.3 ± 3.2 pts (300 boards)
+no_opening_model 0.705 ± 0.036 (423/600)  CPU mean  526 worst 2050 ms  over 0  faults 0   vs full: -3.5 ± 4.6 pts (300 boards)
+rules_off      0.492 ± 0.040 (295/600)  CPU mean  593 worst 2060 ms  over 0  faults 0   vs full: -24.8 ± 4.5 pts (300 boards)
+[06:59] done
+
+==== 2026-10-18 08:41 rerun: new ablation arms, stronger baselines
+[08:41] 1a headline: distill vs F, clocked
+0 chunks to play, 6 at a time
+distill        0.848 ± 0.022 (848/1000)  CPU mean  389 worst 1230 ms  over 0  faults 0
+[08:41] 1b headline: distill and F vs AlphaBeta-2, no clock
+0 chunks to play, 8 at a time
+distill        0.832 ± 0.023 (832/1000)  CPU mean  520 worst 2440 ms  over 0  faults 0
+F              0.485 ± 0.031 (485/1000)  CPU mean  336 worst 1050 ms  over 0  faults 0   vs distill: -34.7 ± 3.7 pts (500 boards)
+[08:41] 2 round robin
+0 chunks to play, 8 at a time, nice 19
+Ratings (Bradley-Terry, Elo scale, F = 1500; 95% bootstrap interval)
+
+| agent | rating | 95% interval | games |
+|---|---|---|---|
+| distill | 1752 | 1730 – 1772 | 2400 |
+| ppo_search | 1595 | 1573 – 1613 | 2400 |
+| lookahead | 1595 | 1577 – 1611 | 2400 |
+| heuristic | 1549 | 1527 – 1569 | 2400 |
+| ppo | 1547 | 1529 – 1562 | 2400 |
+| F | 1500 | 1500 – 1500 | 2400 |
+| AB2 | 1485 | 1463 – 1503 | 2400 |
+
+Win rate of the row agent against the column agent (decisive games):
+
+| | distill | ppo_search | lookahead | heuristic | ppo | F | AB2 |
+|---|---|---|---|---|---|---|---|
+| distill | — | 71% | 72% | 78% | 76% | 79% | 82% |
+| ppo_search | 29% | — | 50% | 57% | 55% | 65% | 65% |
+| lookahead | 28% | 50% | — | 56% | 59% | 66% | 62% |
+| heuristic | 22% | 43% | 44% | — | 49% | 57% | 62% |
+| ppo | 24% | 45% | 41% | 51% | — | 55% | 58% |
+| F | 21% | 35% | 34% | 43% | 45% | — | 54% |
+| AB2 | 18% | 35% | 38% | 38% | 42% | 46% | — |
+[08:41] 3 ablation vs F
+150 chunks to play, 8 at a time
+full           0.843 ± 0.029 (506/600)  CPU mean  509 worst 2920 ms  over 0  faults 0
+no_judge       0.777 ± 0.033 (466/600)  CPU mean  439 worst 1590 ms  over 0  faults 0   vs full: -6.7 ± 3.7 pts (300 boards)
+outcome_judge  0.815 ± 0.031 (489/600)  CPU mean  466 worst 1920 ms  over 0  faults 0   vs full: -2.8 ± 3.5 pts (300 boards)
+no_dev_term    0.840 ± 0.029 (504/600)  CPU mean  525 worst 2990 ms  over 0  faults 0   vs full: -0.3 ± 2.7 pts (300 boards)
+no_planner     0.842 ± 0.029 (505/600)  CPU mean  516 worst 1910 ms  over 0  faults 0   vs full: -0.2 ± 1.6 pts (300 boards)
+no_chains      0.843 ± 0.029 (506/600)  CPU mean  499 worst 2040 ms  over 0  faults 0   vs full: +0.0 ± 0.9 pts (300 boards)
+no_win_check   0.843 ± 0.029 (506/600)  CPU mean  508 worst 3040 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.805 ± 0.032 (483/600)  CPU mean  468 worst 2670 ms  over 0  faults 0   vs full: -3.8 ± 2.5 pts (300 boards)
+no_robber_rule 0.853 ± 0.028 (512/600)  CPU mean  535 worst 2120 ms  over 0  faults 0   vs full: +1.0 ± 2.2 pts (300 boards)
+no_opening_model 0.822 ± 0.031 (493/600)  CPU mean  471 worst 3200 ms  over 0  faults 0   vs full: -2.2 ± 3.4 pts (300 boards)
+rules_off      0.637 ± 0.038 (382/600)  CPU mean  583 worst 1840 ms  over 0  faults 0   vs full: -20.7 ± 4.3 pts (300 boards)
+no_turn_search 0.842 ± 0.029 (505/600)  CPU mean  476 worst 1680 ms  over 0  faults 0   vs full: -0.2 ± 1.6 pts (300 boards)
+margin_000     0.833 ± 0.030 (500/600)  CPU mean  621 worst 2670 ms  over 0  faults 0   vs full: -1.0 ± 2.9 pts (300 boards)
+margin_001     0.843 ± 0.029 (506/600)  CPU mean  475 worst 2290 ms  over 0  faults 0   vs full: +0.0 ± 2.5 pts (300 boards)
+margin_005     0.802 ± 0.032 (481/600)  CPU mean  433 worst 1330 ms  over 0  faults 0   vs full: -4.2 ± 3.3 pts (300 boards)
+margin_010     0.807 ± 0.032 (484/600)  CPU mean  399 worst 1320 ms  over 0  faults 0   vs full: -3.7 ± 3.3 pts (300 boards)
+[08:47] 3 ablation vs AB2
+150 chunks to play, 8 at a time
+full           0.815 ± 0.031 (489/600)  CPU mean  554 worst 1860 ms  over 0  faults 0
+no_judge       0.755 ± 0.034 (453/600)  CPU mean  496 worst 2500 ms  over 0  faults 0   vs full: -6.0 ± 3.8 pts (300 boards)
+outcome_judge  0.783 ± 0.033 (470/600)  CPU mean  529 worst 2040 ms  over 0  faults 0   vs full: -3.2 ± 4.0 pts (300 boards)
+no_dev_term    0.815 ± 0.031 (489/600)  CPU mean  582 worst 1530 ms  over 0  faults 0   vs full: +0.0 ± 2.9 pts (300 boards)
+no_planner     0.820 ± 0.031 (492/600)  CPU mean  555 worst 2380 ms  over 0  faults 0   vs full: +0.5 ± 2.4 pts (300 boards)
+no_chains      0.820 ± 0.031 (492/600)  CPU mean  548 worst 1980 ms  over 0  faults 0   vs full: +0.5 ± 1.4 pts (300 boards)
+no_win_check   0.815 ± 0.031 (489/600)  CPU mean  561 worst 1850 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.793 ± 0.032 (476/600)  CPU mean  524 worst 2240 ms  over 0  faults 0   vs full: -2.2 ± 3.0 pts (300 boards)
+no_robber_rule 0.820 ± 0.031 (492/600)  CPU mean  606 worst 2330 ms  over 0  faults 0   vs full: +0.5 ± 2.8 pts (300 boards)
+no_opening_model 0.822 ± 0.031 (493/600)  CPU mean  540 worst 1710 ms  over 0  faults 0   vs full: +0.7 ± 3.5 pts (300 boards)
+rules_off      0.638 ± 0.038 (383/600)  CPU mean  662 worst 2210 ms  over 0  faults 0   vs full: -17.7 ± 4.0 pts (300 boards)
+no_turn_search 0.820 ± 0.031 (492/600)  CPU mean  458 worst 1970 ms  over 0  faults 0   vs full: +0.5 ± 2.4 pts (300 boards)
+margin_000     0.827 ± 0.030 (496/600)  CPU mean  617 worst 2330 ms  over 0  faults 0   vs full: +1.2 ± 3.3 pts (300 boards)
+margin_001     0.810 ± 0.031 (486/600)  CPU mean  470 worst 1670 ms  over 0  faults 0   vs full: -0.5 ± 2.9 pts (300 boards)
+margin_005     0.793 ± 0.032 (476/600)  CPU mean  439 worst 1450 ms  over 0  faults 0   vs full: -2.2 ± 3.6 pts (300 boards)
+margin_010     0.797 ± 0.032 (478/600)  CPU mean  411 worst 1630 ms  over 0  faults 0   vs full: -1.8 ± 3.5 pts (300 boards)
+[09:05] 3 ablation vs lookahead
+150 chunks to play, 8 at a time
+full           0.740 ± 0.035 (444/600)  CPU mean  557 worst 2140 ms  over 0  faults 0
+no_judge       0.630 ± 0.039 (378/600)  CPU mean  464 worst 1730 ms  over 0  faults 0   vs full: -11.0 ± 4.5 pts (300 boards)
+outcome_judge  0.665 ± 0.038 (399/600)  CPU mean  498 worst 1690 ms  over 0  faults 0   vs full: -7.5 ± 4.0 pts (300 boards)
+no_dev_term    0.693 ± 0.037 (416/600)  CPU mean  567 worst 2040 ms  over 0  faults 0   vs full: -4.7 ± 3.7 pts (300 boards)
+no_planner     0.747 ± 0.035 (448/600)  CPU mean  548 worst 1850 ms  over 0  faults 0   vs full: +0.7 ± 2.9 pts (300 boards)
+no_chains      0.735 ± 0.035 (441/600)  CPU mean  540 worst 2140 ms  over 0  faults 0   vs full: -0.5 ± 2.5 pts (300 boards)
+no_win_check   0.740 ± 0.035 (444/600)  CPU mean  559 worst 2290 ms  over 0  faults 0   vs full: +0.0 ± 0.0 pts (300 boards)
+no_knight_rule 0.703 ± 0.037 (422/600)  CPU mean  515 worst 2070 ms  over 0  faults 0   vs full: -3.7 ± 3.7 pts (300 boards)
+no_robber_rule 0.717 ± 0.036 (430/600)  CPU mean  599 worst 2840 ms  over 0  faults 0   vs full: -2.3 ± 3.2 pts (300 boards)
+no_opening_model 0.705 ± 0.036 (423/600)  CPU mean  526 worst 2050 ms  over 0  faults 0   vs full: -3.5 ± 4.6 pts (300 boards)
+rules_off      0.492 ± 0.040 (295/600)  CPU mean  593 worst 2060 ms  over 0  faults 0   vs full: -24.8 ± 4.5 pts (300 boards)
+no_turn_search 0.747 ± 0.035 (448/600)  CPU mean  493 worst 1740 ms  over 0  faults 0   vs full: +0.7 ± 2.9 pts (300 boards)
+margin_000     0.708 ± 0.036 (425/600)  CPU mean  683 worst 5240 ms  over 0  faults 0   vs full: -3.2 ± 3.9 pts (300 boards)
+margin_001     0.715 ± 0.036 (429/600)  CPU mean  498 worst 1750 ms  over 0  faults 0   vs full: -2.5 ± 3.6 pts (300 boards)
+margin_005     0.705 ± 0.036 (423/600)  CPU mean  446 worst 1890 ms  over 0  faults 0   vs full: -3.5 ± 3.8 pts (300 boards)
+margin_010     0.645 ± 0.038 (387/600)  CPU mean  409 worst 1570 ms  over 0  faults 0   vs full: -9.5 ± 4.4 pts (300 boards)
+[09:16] 4 stronger baselines, natively
+== native AB3, distill
+native_AB3_distill 0.833 ± 0.042 (250/300)  opponent {'CAT': 'AB', 'CAT_DEPTH': '3'}
+== native AB3, F
+native_AB3_F     0.450 ± 0.056 (135/300)  opponent {'CAT': 'AB', 'CAT_DEPTH': '3'}
+== native hex_e2g, distill
+native_hex_e2g_distill 0.897 ± 0.034 (269/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e2g:FooPlayer'}
+== native hex_e2g, F
+native_hex_e2g_F 0.570 ± 0.056 (171/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e2g:FooPlayer'}
+== native hex_e7b, distill
+native_hex_e7b_distill 0.953 ± 0.024 (286/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e7b:FooPlayer'}
+== native hex_e7b, F
+native_hex_e7b_F 0.730 ± 0.050 (219/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e7b:FooPlayer'}
+== native hex_e5bg, distill
+native_hex_e5bg_distill 0.907 ± 0.033 (272/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e5bg:FooPlayer'}
+== native hex_e5bg, F
+native_hex_e5bg_F 0.597 ± 0.056 (179/300)  opponent {'CAT': 'PY', 'CAT_CLASS': 'hexmachina.best_e5bg:FooPlayer'}
+== native G, distill
+native_G_distill 0.970 ± 0.033 (97/100)  opponent {'CAT': 'G'}
+== native G, F
+native_G_F       0.880 ± 0.064 (88/100)  opponent {'CAT': 'G'}
+== native M1000, distill
+native_M1000_distill 1.000 ± 0.000 (100/100)  opponent {'CAT': 'M', 'CAT_N': '1000'}
+== native M1000, F
+native_M1000_F   0.980 ± 0.027 (98/100)  opponent {'CAT': 'M', 'CAT_N': '1000'}
+[13:51] done
+==== 2026-10-18 13:52 round robin: + ens_distill
+140 chunks to play, 8 at a time, nice 19
+[13:53] 10 chunks done, 56s
+[13:54] 20 chunks done, 114s
+[13:54] 30 chunks done, 166s
+[13:55] 40 chunks done, 214s
+[13:56] 50 chunks done, 266s
+[13:57] 60 chunks done, 314s
+[13:58] 70 chunks done, 368s
+[13:59] 80 chunks done, 408s
+[13:59] 90 chunks done, 456s
+[14:00] 100 chunks done, 500s
+[14:01] 110 chunks done, 552s
+[14:02] 120 chunks done, 606s
+[14:03] 130 chunks done, 652s
+[14:04] 140 chunks done, 732s
+Ratings (Bradley-Terry, Elo scale, F = 1500; 95% bootstrap interval)
+
+| agent | rating | 95% interval | games |
+|---|---|---|---|
+| ens_distill | 1765 | 1745 – 1783 | 2800 |
+| distill | 1752 | 1735 – 1772 | 2800 |
+| lookahead | 1600 | 1582 – 1616 | 2800 |
+| ppo_search | 1596 | 1579 – 1615 | 2800 |
+| heuristic | 1551 | 1530 – 1569 | 2800 |
+| ppo | 1548 | 1530 – 1566 | 2800 |
+| F | 1500 | 1500 – 1500 | 2800 |
+| AB2 | 1485 | 1464 – 1501 | 2800 |
+
+Win rate of the row agent against the column agent (decisive games):
+
+| | ens_distill | distill | lookahead | ppo_search | heuristic | ppo | F | AB2 |
+|---|---|---|---|---|---|---|---|---|
+| ens_distill | — | 53% | 68% | 73% | 77% | 78% | 83% | 85% |
+| distill | 47% | — | 72% | 71% | 78% | 76% | 79% | 82% |
+| lookahead | 32% | 28% | — | 50% | 56% | 59% | 66% | 62% |
+| ppo_search | 27% | 29% | 50% | — | 57% | 55% | 65% | 65% |
+| heuristic | 23% | 22% | 44% | 43% | — | 49% | 57% | 62% |
+| ppo | 22% | 24% | 41% | 45% | 51% | — | 55% | 58% |
+| F | 17% | 21% | 34% | 35% | 43% | 45% | — | 54% |
+| AB2 | 15% | 18% | 38% | 35% | 38% | 42% | 46% | — |

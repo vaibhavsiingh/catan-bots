@@ -1,7 +1,7 @@
 {
  "agent": "agents/distill/agent.py",
  "opp": {
-  "CAT_CLASS": "hexmachina.best_e5bg:FooPlayer",
-  "CAT": "PY"
+  "CAT": "PY",
+  "CAT_CLASS": "hexmachina.best_e5bg:FooPlayer"
  }
 }

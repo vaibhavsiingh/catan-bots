@@ -1,0 +1,8 @@
+{
+ "path": "agents/distill/agent.py",
+ "env": {
+  "DISTILL_OPENING": "0"
+ },
+ "opp": "agents/lookahead/agent.py",
+ "clock": false
+}
