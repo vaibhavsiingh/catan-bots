@@ -225,3 +225,46 @@ Win rate of the row agent against the column agent (decisive games):
 | ppo | 22% | 24% | 41% | 45% | 51% | — | 55% | 58% |
 | F | 17% | 21% | 34% | 35% | 43% | 45% | — | 54% |
 | AB2 | 15% | 18% | 38% | 35% | 38% | 42% | 46% | — |
+==== 2026-10-18 21:02 head to head: ens_distill vs distill
+40 chunks to play, 8 at a time
+[21:03] 1 chunks done, 52s
+[21:03] 2 chunks done, 52s
+[21:03] 3 chunks done, 52s
+[21:03] 4 chunks done, 56s
+[21:03] 5 chunks done, 56s
+[21:03] 6 chunks done, 58s
+[21:03] 7 chunks done, 62s
+[21:03] 8 chunks done, 68s
+[21:04] 9 chunks done, 118s
+[21:04] 10 chunks done, 118s
+[21:04] 11 chunks done, 122s
+[21:04] 12 chunks done, 122s
+[21:04] 13 chunks done, 126s
+[21:04] 14 chunks done, 126s
+[21:04] 15 chunks done, 134s
+[21:04] 16 chunks done, 134s
+[21:05] 17 chunks done, 184s
+[21:05] 18 chunks done, 184s
+[21:05] 19 chunks done, 188s
+[21:05] 20 chunks done, 188s
+[21:05] 21 chunks done, 188s
+[21:05] 22 chunks done, 190s
+[21:05] 23 chunks done, 192s
+[21:05] 24 chunks done, 192s
+[21:06] 25 chunks done, 248s
+[21:06] 26 chunks done, 254s
+[21:06] 27 chunks done, 256s
+[21:06] 28 chunks done, 256s
+[21:06] 29 chunks done, 256s
+[21:06] 30 chunks done, 258s
+[21:06] 31 chunks done, 262s
+[21:06] 32 chunks done, 262s
+[21:07] 33 chunks done, 320s
+[21:07] 34 chunks done, 320s
+[21:07] 35 chunks done, 320s
+[21:07] 36 chunks done, 320s
+[21:07] 37 chunks done, 320s
+[21:07] 38 chunks done, 322s
+[21:07] 39 chunks done, 326s
+[21:07] 40 chunks done, 326s
+ens_distill    0.523 ± 0.022 (1046/2000)  CPU mean  580 worst 2630 ms  over 0  faults 0

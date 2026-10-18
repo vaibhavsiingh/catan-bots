@@ -17,9 +17,10 @@ compared board by board. Records are in `results/gauntlet/`; `python tools/summa
 | F (catanatron ValueFunctionPlayer) | 300 | **84.7% ± 4.1** | 51.3% | +33 ± 5 |
 | AlphaBeta, depth 2 | 300 | **84.0% ± 4.1** | 50.7% | +33 ± 7 |
 | AlphaBeta, depth 2, sees hidden cards | 300 | **82.7% ± 4.3** | 51.3% | |
-| AlphaBeta, depth 3, sees hidden cards | 100 | **82.0% ± 7.5** | 46.0% | |
-| MCTS (100 simulations), Random, WeightedRandom, VictoryPoint | 100–300 | 100% | 100% | |
-| HexMachina E2-G, E7-B, E5-B-G (LLM-evolved players, [repro](https://github.com/OguroHayato/hexmachina-repro)) | 100 each | 89%, 91%, 92% | 57%, 70%, 62% | |
+| AlphaBeta, depth 3, sees hidden cards | 300 | **83.3% ± 4.2** | 45.0% | |
+| GreedyPlayouts, sees hidden cards | 100 | 97% | 88% | |
+| MCTS (100 or 1000 simulations), Random, WeightedRandom, VictoryPoint | 100–300 | 100% | 98–100% | |
+| HexMachina E2-G, E7-B, E5-B-G (LLM-evolved players, [repro](https://github.com/OguroHayato/hexmachina-repro)) | 300 each | 90%, 95%, 91% | 57%, 73%, 60% | |
 | `ppo` (this repo) | 300 | 76.7% | 36.7% | +40 ± 7 |
 | `lookahead` (this repo) | 300 | 74.7% | 32.7% | +42 ± 7 |
 | `ppo_search` (this repo) | 300 | 71.7% | 35.0% | +37 ± 7 |
@@ -30,6 +31,16 @@ compared board by board. Records are in `results/gauntlet/`; `python tools/summa
 does in catanatron's own matches. Catanatron's README rates AlphaBeta at 80% against F over 25 games; with
 hidden cards masked, or over 300 games, we measure it level with F.
 
+All agents against each other (`results/roundrobin/`, 400 games per pair, clock off; Bradley-Terry ratings on
+the Elo scale, F = 1500):
+
+| ens_distill | distill | lookahead | ppo_search | heuristic | ppo | F | AlphaBeta-2 |
+|---|---|---|---|---|---|---|---|
+| 1765 | 1752 | 1600 | 1596 | 1551 | 1548 | 1500 | 1485 |
+
+Head to head over 2000 games, `ens_distill` beats `distill` 52.3% (+2.3 ± 1.6 points board by board).
+`python tools/paper_tables.py` rebuilds these and the ablation tables into `results/tables.md`.
+
 ## Agents
 
 All agents implement one interface, `Agent().decide(obs, playable_actions) -> index`, and run in the harness.
@@ -37,6 +48,7 @@ All agents implement one interface, `Agent().decide(obs, playable_actions) -> in
 | Agent | What it is |
 |---|---|
 | `agents/distill` | F's value function extended with a turn planner (trade chains, road → settlement), win checks, knight and robber rules and a learned opening model, plus an ensemble of three small MLPs (102 features) that override a move when they rate another one clearly better. The strongest agent. |
+| `agents/ens_distill` | `distill` plus a second engine (F-style one-ply search with road saving and a city-resource robber) that proposes its own main-turn move; the same MLP ensemble picks it when it rates it higher. Slightly stronger than `distill`. |
 | `agents/lookahead` | A transformer policy/value network over board entities, with a value-guided lookahead over its top moves (setup placements and two-step turns) under the CPU clock. |
 | `agents/ppo` | An entity-token transformer (its own encoder) trained by behaviour cloning from F, then PPO against an opponent pool. One forward pass per decision. |
 | `agents/ppo_search` | `ppo` plus an opponent-model search: rollouts of our turn and the opponent's reply, leaves scored by a value net. |

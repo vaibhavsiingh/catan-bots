@@ -66,6 +66,9 @@ def results(out, names):
     for a, b in combinations(names, 2):
         d = os.path.join(out, "pairs", f"{a}__{b}")
         if not os.path.isdir(d):
+            a, b = b, a  # folders are named in the order the agents were first listed
+            d = os.path.join(out, "pairs", f"{a}__{b}")
+        if not os.path.isdir(d):
             continue
         for f in os.listdir(d):
             if f.endswith(".json") and f != "pair.json":
@@ -90,12 +93,13 @@ def bradley_terry(wins, names, prior=0.5, iters=2000):
     return p
 
 
-def rate(out, names, anchor):
+def ratings(out, names, anchor):
+    """(wins, names that played, anchor or None, point ratings, sorted bootstrap ratings per agent)"""
     wins = results(out, names)
     played = {a for a in names if any(wins[a][b] + wins[b][a] for b in names)}
     names = [a for a in names if a in played]
     if len(names) < 2:
-        return "no games yet"
+        return wins, names, None, {}, {}
     anchor = anchor if anchor in names else None
 
     def elo(wn):
@@ -115,10 +119,17 @@ def rate(out, names, anchor):
                 wb[a][b], wb[b][a] = k, n - k
         for a, v in elo(wb).items():
             boot[a].append(v)
+    return wins, names, anchor, point, {a: sorted(v) for a, v in boot.items()}
+
+
+def rate(out, names, anchor):
+    wins, names, anchor, point, boot = ratings(out, names, anchor)
+    if len(names) < 2:
+        return "no games yet"
     lines = [f"Ratings (Bradley-Terry, Elo scale, {anchor or 'mean'} = 1500; 95% bootstrap interval)", "",
              "| agent | rating | 95% interval | games |", "|---|---|---|---|"]
     for a in sorted(names, key=lambda x: -point[x]):
-        lo, hi = sorted(boot[a])[4], sorted(boot[a])[194]
+        lo, hi = boot[a][4], boot[a][194]
         g = sum(wins[a][b] + wins[b][a] for b in names)
         lines.append(f"| {a} | {point[a]:.0f} | {lo:.0f} – {hi:.0f} | {g} |")
     order = sorted(names, key=lambda x: -point[x])

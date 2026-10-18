@@ -8,3 +8,8 @@ opponent plays on the true game (`tools/native_match.py`). Each `arm.json` recor
 
 Boards 550000 onward, both seats per board, clock off (`--noclock`) so that parallel runs compare strength,
 not CPU contention.
+
+The paper's tables (headline, round robin, ens_distill vs distill, ablations, margin sweep, stronger baselines)
+come from all of `results/`:
+
+    python tools/paper_tables.py results    # writes tables.md, tables.tex (booktabs) and margin_sweep.csv
